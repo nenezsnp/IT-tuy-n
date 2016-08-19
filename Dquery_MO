@@ -1,0 +1,41 @@
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+using namespace std;
+const int N = 30001, M = 200001;
+struct query{
+	int l,r,id;
+} inp[M];
+int cnt[1000001];
+int block;
+bool operator< (query a, query b){
+	if((a.l-1)/block == (b.l-1)/block) return (a.r < b.r);
+	return ((a.l-1)/block < (b.l-1)/block);
+}
+int a[N],n,q;
+int ans = 0;
+int res[M];
+void add(int x, int val){
+	int pre = cnt[x];
+	cnt[x]+= val;
+	if(pre>0 && !cnt[x]) ans--;
+	else if(pre==0 && cnt[x]>0) ans++;  
+}
+int main(){
+	//freopen ("test.inp","r", stdin);
+	ios_base::sync_with_stdio(false);cin.tie();
+	cin>>n;	block = sqrt(n);
+	For(i,1,n) cin>>a[i];
+	cin>>q;
+	For(i,1,q) cin>>inp[i].l>>inp[i].r, inp[i].id = i;
+	sort (inp+1, inp+1+q);
+/*	For(i,1,q) cout<<inp[i].l<<' '<<inp[i].r<<'\n';*/
+	int l =0, r= 0;
+	For(i,1,q){
+		while (l < inp[i].l) {add(a[l],-1); l++;}
+		while (r < inp[i].r) {r++; add(a[r] , 1);}
+		while (l > inp[i].l) {l--;add(a[l],1); }
+		while (r > inp[i].r) {add(a[r],-1); r--;}
+		res[inp[i].id] = ans;
+	}
+	For(i,1,q) cout<<res[i]<<'\n';
+} 
