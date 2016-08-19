@@ -1,0 +1,144 @@
+/*input
+1
+7
+3 2 3 4
+0
+3 5 6 7
+0
+0
+0
+0
+2
+5 7
+2 7
+*/
+#include <iostream>
+#include <cstdio>
+#include <vector>
+#include <functional>
+#include <math.h>
+#include <string.h>
+#include <utility>
+#include <algorithm>
+#include <iomanip>
+#include <stack>
+#include <queue>
+#include <set>
+#include <map>
+#include <stdlib.h>
+#include <list>
+#include <assert.h>
+using namespace std;
+#define sp ' '
+#define endl '\n'
+#define fi first
+#define se second
+#define mp make_pair
+
+int n;
+int parent[1005];
+int dp[1005][22];
+int dis[1005];
+vector<vector<int> > a(1005);
+
+void reset()
+{
+	for (int i = 1; i <= 1000; i++)
+		a[i].clear();
+	for (int i = 1; i <= 1000; i++)
+	{
+		dis[i] = 1;
+		parent[i] = i;
+	}
+}
+
+void dfs(int u)
+{
+	for (int i = 0; i < a[u].size(); i++)
+	{
+		int v = a[u][i];
+		if (v != parent[u])
+		{
+			parent[v] = u;
+			dis[v] = dis[u] + 1;
+			dfs(v);
+		}
+	}
+}
+
+void make_lca()
+{
+	for (int i = 1; i <= n; i++)
+		dp[i][0] = parent[i];
+	for (int i = 1; i <= 20; i++)
+	{
+		for (int j = 1; j <= n; j++)
+		{
+			dp[j][i] = dp[dp[j][i - 1]][i - 1];
+		}
+	}
+}
+
+int lca(int p , int q)
+{
+	if (dis[p] > dis[q])
+	{
+		for (int i = 20; i >= 0; i--)
+		{
+			if (dis[dp[p][i]] >= dis[q])
+				p = dp[p][i];
+		}
+	}
+	else
+	{
+		for (int i = 20; i >= 0; i--)
+		{
+			if (dis[dp[q][i]] >= dis[p])
+				q = dp[q][i];
+		}
+	}
+	if (p == q)
+		return p;
+	for (int i = 20; i >= 0; i--)
+	{
+		if (dp[p][i] != dp[q][i])
+			p = dp[p][i], q = dp[q][i];
+	}
+	return dp[p][0];
+}
+int main()
+{
+	int T, cnt = 0;
+	scanf("%d", &T);
+	while (T--)
+	{
+		reset();
+		cnt++;
+		scanf("%d", &n);
+		for (int i = 1; i <= n; i++)
+		{
+			int m;
+			cin >> m;
+			for (int j = 1; j <= m; j++)
+			{
+				int t;
+				cin >> t;
+				a[i].push_back(t);
+			}
+		}
+		for (int i = 1; i <= n; i++)
+			if (parent[i] == i)
+				dfs(i);
+		make_lca();
+		printf("Case %d:\n", cnt);
+		make_lca();
+		int m;
+		scanf("%d", &m);
+		while (m--)
+		{
+			int p, q;
+			scanf("%d %d", &p, &q);
+			printf("%d\n", lca(p, q));
+		}
+	}
+}
