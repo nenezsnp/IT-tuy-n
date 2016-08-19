@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+using namespace std;
+const int N = 3000001;
+int a[N],n,t;
+#define mid ((l+r)>>1)
+#define pa pair<int,int>
+deque< int > mx, mn;
+int main(){
+    //freopen ("test.inp","r", stdin);
+    ios_base::sync_with_stdio(0);
+    cin>>t>>n;
+    For(i,1,n) cin>>a[i];
+    int l=1,r=1;
+    mx.push_back(1);
+    mn.push_back(1);
+    int ans= 0;
+    while (r <= n){
+        if(a[mx.front()] - a[mn.front()] <= t){
+            ans =max(ans, r-l+1);
+            r++;
+            while (mx.size()&&a[mx.back()] <= a[r]) mx.pop_back(); mx.push_back(r);
+            while (mn.size()&&a[mn.back()] >= a[r]) mn.pop_back(); mn.push_back(r);
+        }
+        else {
+            l++;    if(mx.size() && mx.front() < l) mx.pop_front();
+                    if(mn.size() && mn.front() < l) mn.pop_front();
+            if(l>r){r=l; mn.push_back(r); mx.push_back(r); }
+        }
+    }
+    cout<<ans;
+}
+
