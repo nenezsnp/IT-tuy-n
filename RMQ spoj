@@ -1,0 +1,34 @@
+#include<bits/stdc++.h>
+ 
+using namespace std;
+ 
+#define sp ' '
+#define endl '\n'
+ 
+ 
+int const oo = 10e9;
+ 
+int M[100001][18];
+ 
+int main(){
+    ios_base::sync_with_stdio(0);
+    #ifdef aloneranger
+        freopen ("f.txt","r" , stdin);
+    #endif // aloneranger
+    int n;  cin >> n;
+    for (int i=0;i<n;++i)  cin >> M[i][0];
+ 
+    for (int k=1; (1 << k)  <= n; ++k){
+        for (int i=0;i + (1 << k) -1 < n;++i){
+            M[i][k] = min ( M[i][k-1] , M [ i + ( 1 <<  (k-1) ) ][ k- 1] );
+        }
+    }
+    int q;  cin >> q;
+    int x,y;
+    while (q--){
+        cin >> x >> y;
+        int k = log2(y-x + 1);
+        cout << min ( M[x][k] , M[y- (1 << k) + 1][k] ) << '\n';
+    }
+}
+ 
