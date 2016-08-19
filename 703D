@@ -1,0 +1,54 @@
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+#define Ford(i,b,a) for(int i=(b);i>=(a);--i)
+using namespace std;
+const int N = 1000001;
+int a[N], bit[N],n, last[N],m, XOR[N], res[N];
+struct pa{
+    int l,r,real;
+};
+pa PA(int x,int y,int z) {pa X; X.l=x;X.r=y;X.real = z; return X;}
+pa inp[2*N];
+bool operator<(pa x, pa y){ 
+    if(x.r==y.r) return (x.l < y.l);
+    return (x.r<y.r); 
+}
+vector<int> b;
+void ZIP(){
+    For(i,1,n) b.push_back(a[i]);
+    sort(b.begin(), b.end());
+    b.resize(unique(b.begin(), b.end()) - b.begin());
+    For(i,1,n) a[i] = lower_bound(b.begin(), b.end() , a[i]) - b.begin();
+}
+void upd(int pos,int val){
+    while (pos < N) bit[pos]^=val, pos+= (pos&-pos);
+}
+int get(int pos){
+    int ans =0;
+    for(int i=pos;i;i-=(i&-i)) ans^=bit[i];
+    return ans;
+}
+#define pos a[inp[i].r]
+#define range(l,r) (XOR[l] ^ XOR[r])
+int main(){
+   // freopen ("test.inp","r", stdin);
+    ios_base::sync_with_stdio(0);
+    cin>>n;
+    For(i,1,n) cin>>a[i] ,inp[i] =PA(-1, i, -1), XOR[i]=XOR[i-1]^a[i];
+    ZIP();
+    cin>>m;
+    For(i,1,m){
+        int x,y;cin>>x>>y;inp[n+i] = PA(x-1,y,i);
+    }
+    sort (inp+1, inp+1+m+n);
+    For(i,1,m+n){
+        if(inp[i].l == -1){
+            if(last[pos]) upd(last[pos],b[pos]); last[pos] = inp[i].r;
+            upd(last[pos], b[pos]);
+        }
+        else {
+            res[inp[i].real] = (range(inp[i].l,inp[i].r) ^ ( get(inp[i].l) ^ get(inp[i].r) ) );
+        }
+    }
+    For(i,1,m) cout<<res[i]<<'\n';
+}
