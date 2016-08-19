@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+#define Ford(i,b,a) for(int i=(b);i>=(a);--i)
+using namespace std;
+const int N = 70001;
+int par[N][20], mul[N][20],n,q, lvl[N];
+vector< vector<int> > g;
+void dfs(int u,int level){
+	lvl[u] = level;
+	for(int i=0;i<g[u].size();++i){int v=g[u][i];
+		if(!lvl[v]){
+			par[v][0] = u;
+			dfs(v,level+1);
+		}}	
+}
+int lca(int u,int v){
+	if(lvl[u] < lvl[v]) swap(u,v);
+	Ford(i,19,0)	if(par[u][i]!=-1 && lvl[par[u][i]] >= lvl[v]) u = par[u][i];
+	Ford(i,19,0) 	if(par[u][i]!=-1 && par[u][i] != par[v][i]) u=par[u][i], v=par[v][i];
+	return (u==v ? u : par[u][0]);
+}
+int get(int u,int v){
+	int dis = log2(v-u+1);
+	return lca(mul[u][dis], mul[v - (1<<dis) + 1][dis]);
+}
+int main(){
+	ios_base::sync_with_stdio(false);
+	//freopen ("test.inp","r", stdin);
+	cin>>n>>q; g.assign (n+1, vector<int>());
+	memset (par , -1, sizeof(par));
+	memset (mul , -1, sizeof(mul));
+	For(i,1,n-1){
+		int x,y;cin>>x>>y;	g[x].push_back(y); g[y].push_back(x);
+	}
+	dfs(1,1);
+	For(j,1,19) For(i,1,n) if(par[i][j-1] != -1 ) par[i][j] = par[par[i][j-1]][j-1];
+	For(i,1,n) mul[i][0]=i;
+	For(j,1,19) for(int i=1;i-1 + (1<<j) <= n ; ++i) mul[i][j] = lca(mul[i][j-1] , mul[i + (1<<(j-1))][j-1]);
+	For(i,1,q){
+		int u,v;cin>>u>>v;
+		cout<<get(u,v)<<'\n';
+	}
+} 
