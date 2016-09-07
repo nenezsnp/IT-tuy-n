@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+#define int long long
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+#define Ford(i,b,a) for(int i=(b);i>=(a);--i)
+using namespace std;
+const int N = 100001;
+int n,m;
+#define pa pair<int,int>
+#define len first
+#define c second
+vector < vector<int> > g;
+vector< vector<pa> > cost;
+int par[N][20], R[N][20],lvl[N], dp[N];
+int get(int u,int leng){
+	int wtf = max(lvl[u] -leng,1ll), ans = 1e15;
+	//cout<<u<<' ';
+	Ford(i,19,0)if (par[u][i]!=-1 && lvl[par[u][i]] >= wtf){
+		ans = min (ans, R[u][i]); u = par[u][i];
+	}
+	//cout<<u<<'\n';
+	return ans; 
+}
+void solve(int u,int level){
+	lvl[u]=level;
+	for(int i=1;i<=19 && par[u][i-1] != -1 ; ++i) par[u][i] = par[par[u][i-1]][i-1];
+	if(u!=1){	R[u][0] = dp[par[u][0]];
+		for(int i=1;i<=19 && (lvl[u]-(1ll<<i)) >= 1; ++i) R[u][i] = min (R[u][i-1],R[par[u][i-1]][i-1]);
+		for(int i=0;i<cost[u].size();++i){ pa pro =cost[u][i];
+			dp[u] = min (dp[u] , get(u,pro.len) + pro.c); 
+		}
+	}  
+	for(int i=0;i<g[u].size();++i){	int v=g[u][i];
+		if(!lvl[v]){
+			par[v][0] = u; solve(v,level+1);}
+	}
+}
+main(){
+	//freopen ("test.inp", "r", stdin);
+	ios_base::sync_with_stdio(false);
+	cin>>n>>m;
+	g.assign (n+1, vector<int>() );
+	cost.assign(n+1, vector< pa >() );
+	For(i,2,n) dp[i] = 1e15;
+	For(i,1,n-1){
+		int x,y;cin>>x>>y;
+		g[x].push_back(y); g[y].push_back(x);
+	}
+	For(i,1,m){
+		int v,k,m;cin>>v>>k>>m; cost[v].push_back(pa(k,m));
+	}
+	memset(par, -1, sizeof(pa));
+	solve(1,1);
+	int q;cin>>q;
+	//For(i,1,n) cout<<dp[i]<<' ';cout<<'\n';
+	For(i,1,q){int x;cin>>x; cout<<dp[x]<<'\n';} 
+} 
