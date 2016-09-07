@@ -1,0 +1,24 @@
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a);i<=(b);++i)
+using namespace std;
+const int N = 505;
+int n,m,k;
+int ck[N],dis[N][N];
+int main(){
+	ios_base::sync_with_stdio(false);
+	//freopen ("test.inp","r", stdin);
+	scanf("%d%d%d",&n,&m,&k);
+	For(i,1,n) For(j,1,n) if(i!=j) dis[i][j] = 1e9;
+	For(i,1,m){
+		int x,y,c;scanf("%d%d%d",&x,&y,&c);	dis[x][y]=c;
+	}
+	For(i,1,k){
+		int t;scanf("%d", &t);
+		if(t==1){	int x;scanf("%d", &x);
+			if(!ck[x]){ck[x]=1; For(i,1,n)For(j,1,n) dis[i][j] = min (dis[i][j], dis[i][x] + dis[x][j]);}
+		}
+		else {
+			int x,y;scanf("%d%d",&x,&y);	printf("%d\n", (dis[x][y] == 1e9 ? -1 : dis[x][y]) );
+		}
+	}
+} 
