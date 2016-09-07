@@ -1,0 +1,38 @@
+/*input
+6
+1
+2
+2
+1
+5
+*/
+#include <bits/stdc++.h>
+#define For(i,a,b) for(int i=(a),_b=(b);i<=_b;++i) 
+using namespace std;
+const int N = 200001;
+int n,par[N][20],lvl[N];
+int lca(int u,int v){
+	if(lvl[u]<lvl[v]) swap(u,v);
+	for(int i=19;i>=0;--i) if(par[u][i]!=-1&&lvl[par[u][i]]>=lvl[v]) u=par[u][i]; if(u==v) return u; 
+	for(int i=19;i>=0;--i) if(par[u][i]!=-1 && par[u][i]!=par[v][i]) u=par[u][i], v=par[v][i]; return par[u][0];  
+}
+int dis(int u,int v){return lvl[u]+ lvl[v] - 2*lvl[lca(u,v)];}
+int main(){
+	cin>>n;
+	memset(par, -1,sizeof(par));
+	int u=1,v=0,res= 0;
+	lvl[1] = 1;
+	for(int i=2;i<=n;++i){
+		cin>>par[i][0]; lvl[i] = lvl[par[i][0]]+1;
+		For(j,1,19) if(par[i][j-1]!=-1) par[i][j]=par[par[i][j-1]][j-1]; else break;
+		if(v==0) {v=i; res=dis(u,v);}
+		else {
+			int d1=dis(v,i) , d2=dis(u,i);
+			if(d1>d2) {if(res<d1){res=d1;u=i;}}
+			else {
+				if(res<d2){res=d2;v=i;}
+			}
+		}
+		cout<<res<<' ';
+	}
+}
